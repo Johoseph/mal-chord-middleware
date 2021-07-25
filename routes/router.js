@@ -1,5 +1,8 @@
 import express from "express";
 import axios from "axios";
+import { Cache } from "memory-cache";
+
+const animeCache = new Cache();
 
 export const router = express.Router();
 
@@ -68,14 +71,25 @@ router.post("/user_details", async (req, res) => {
 
 // Get Anime/List Details
 router.post("/user_anime_list", async (req, res) => {
+  const userToken = req.body.userToken;
+
+  // Empty large cache
+  if (animeCache.size() >= 50) animeCache.clear();
+
+  // Check cache
+  if (animeCache.get(userToken))
+    return res.status(200).json(animeCache.get(userToken));
+
   const response = await axios
     .get(
       `https://api.myanimelist.net/v2/users/@me/animelist?limit=10&fields=genres,studios,rating,rank,popularity,average_episode_duration,num_episodes,my_list_status{num_times_rewatched}`,
       {
-        headers: generateHeaders(req.body.userToken),
+        headers: generateHeaders(userToken),
       }
     )
     .catch((err) => console.error(err));
+
+  animeCache.put(userToken, response.data, 600000);
 
   return res.status(200).json(response.data);
 });
