@@ -82,7 +82,7 @@ router.post("/user_anime_list", async (req, res) => {
 
   const response = await axios
     .get(
-      `https://api.myanimelist.net/v2/users/@me/animelist?limit=10&fields=genres,studios,rating,rank,popularity,average_episode_duration,num_episodes,my_list_status{num_times_rewatched}`,
+      `https://api.myanimelist.net/v2/users/@me/animelist?limit=1000&fields=genres,studios,rating,rank,popularity,average_episode_duration,num_episodes,my_list_status{num_times_rewatched},alternative_titles`,
       {
         headers: generateHeaders(userToken),
       }
