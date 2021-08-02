@@ -1,28 +1,16 @@
 import express from "express";
 import axios from "axios";
 import { Cache } from "memory-cache";
+import {
+  generateHeaders,
+  getSecondsWatched,
+  ratingEnumConverter,
+  statusEnumConverter,
+} from "../helpers.js";
 
 const animeCache = new Cache();
 
 export const router = express.Router();
-
-const generateHeaders = (clientId) => ({
-  "Content-Type": "application/x-www-form-urlencoded",
-  "X-MAL-Client-ID": process.env.CLIENT_ID,
-  Authorization: `Bearer ${clientId}`,
-});
-
-const getSecondsWatched = (anime) => {
-  const info = anime.node;
-  const duration = info.average_episode_duration;
-  let epsWatched = info.my_list_status.num_episodes_watched;
-
-  if (info.my_list_status.is_rewatching)
-    epsWatched +=
-      info.num_episodes * (info.my_list_status.num_times_rewatched + 1);
-
-  return duration * epsWatched;
-};
 
 // Get Access Token
 router.post("/access_token", async (req, res) => {
@@ -107,12 +95,12 @@ router.post("/user_anime_list", async (req, res) => {
     secondsWatched: getSecondsWatched(anime),
     genres: anime.node.genres.map((genre) => genre.name),
     image: anime.node.main_picture.medium,
-    status: anime.node.my_list_status.status,
+    status: statusEnumConverter(anime.node.my_list_status.status),
     score: anime.node.my_list_status.score,
     lastUpdated: anime.node.my_list_status.updated_at,
     popularity: anime.node.popularity,
     rank: anime.node.rank,
-    rating: anime.node.rating,
+    rating: ratingEnumConverter(anime.node.rating),
     studios: anime.node.studios.map((studio) => studio.name),
   }));
 
