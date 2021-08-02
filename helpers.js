@@ -45,5 +45,7 @@ export const ratingEnumConverter = (rating) => {
       return "R+";
     case "rx":
       return "RX";
+    default:
+      return "None";
   }
 };
