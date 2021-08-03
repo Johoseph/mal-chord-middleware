@@ -91,6 +91,7 @@ router.post("/user_anime_list", async (req, res) => {
 
   // Transform response
   const formattedResponse = response.data.data.map((anime) => ({
+    id: anime.node.id,
     title: anime.node.alternative_titles.en || anime.node.title,
     secondsWatched: getSecondsWatched(anime),
     genres: anime.node.genres.map((genre) => genre.name),
