@@ -14,8 +14,8 @@ export const router = express.Router();
 
 // Get Access Token
 router.post("/access_token", async (req, res) => {
-  const response = await axios
-    .post(
+  try {
+    const response = await axios.post(
       "https://myanimelist.net/v1/oauth2/token",
       `client_id=${process.env.CLIENT_ID}&client_secret=${
         process.env.CLIENT_SECRET
@@ -29,16 +29,18 @@ router.post("/access_token", async (req, res) => {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       }
-    )
-    .catch((err) => res.status(500).json(err));
+    );
 
-  return res.status(200).json(response.data);
+    return res.status(200).json(response.data);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
 });
 
 // Refresh access token
 router.post("/refresh_token", async (req, res) => {
-  const response = await axios
-    .post(
+  try {
+    const response = await axios.post(
       "https://myanimelist.net/v1/oauth2/token",
       `client_id=${process.env.CLIENT_ID}&client_secret=${
         process.env.CLIENT_SECRET
@@ -52,21 +54,28 @@ router.post("/refresh_token", async (req, res) => {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       }
-    )
-    .catch((err) => res.status(500).json(err));
+    );
 
-  return res.status(200).json(response.data);
+    return res.status(200).json(response.data);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
 });
 
 // Get User Details
 router.post("/user_details", async (req, res) => {
-  const response = await axios
-    .get("https://api.myanimelist.net/v2/users/@me", {
-      headers: generateHeaders(req.body.userToken),
-    })
-    .catch((err) => res.status(500).json(err));
+  try {
+    const response = await axios.get(
+      "https://api.myanimelist.net/v2/users/@me",
+      {
+        headers: generateHeaders(req.body.userToken),
+      }
+    );
 
-  return res.status(200).json(response.data);
+    return res.status(200).json(response.data);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
 });
 
 // Get Anime/List Details
@@ -80,32 +89,34 @@ router.post("/user_anime_list", async (req, res) => {
   if (animeCache.get(userToken))
     return res.status(200).json(animeCache.get(userToken));
 
-  const response = await axios
-    .get(
+  try {
+    const response = await axios.get(
       `https://api.myanimelist.net/v2/users/@me/animelist?limit=1000&fields=genres,studios,rating,rank,popularity,average_episode_duration,num_episodes,my_list_status{num_times_rewatched},alternative_titles`,
       {
         headers: generateHeaders(userToken),
       }
-    )
-    .catch((err) => res.status(500).json(err));
+    );
 
-  // Transform response
-  const formattedResponse = response.data.data.map((anime) => ({
-    id: anime.node.id,
-    title: anime.node.alternative_titles.en || anime.node.title,
-    secondsWatched: getSecondsWatched(anime),
-    genres: anime.node.genres.map((genre) => genre.name),
-    image: anime.node.main_picture.medium,
-    status: statusEnumConverter(anime.node.my_list_status.status),
-    score: anime.node.my_list_status.score,
-    lastUpdated: anime.node.my_list_status.updated_at,
-    popularity: anime.node.popularity,
-    rank: anime.node.rank,
-    rating: ratingEnumConverter(anime.node.rating),
-    studios: anime.node.studios.map((studio) => studio.name),
-  }));
+    // Transform response
+    const formattedResponse = response.data.data.map((anime) => ({
+      id: anime.node.id,
+      title: anime.node.alternative_titles.en || anime.node.title,
+      secondsWatched: getSecondsWatched(anime),
+      genres: anime.node.genres.map((genre) => genre.name),
+      image: anime.node.main_picture.medium,
+      status: statusEnumConverter(anime.node.my_list_status.status),
+      score: anime.node.my_list_status.score,
+      lastUpdated: anime.node.my_list_status.updated_at,
+      popularity: anime.node.popularity,
+      rank: anime.node.rank,
+      rating: ratingEnumConverter(anime.node.rating),
+      studios: anime.node.studios.map((studio) => studio.name),
+    }));
 
-  animeCache.put(userToken, formattedResponse, 600000);
+    animeCache.put(userToken, formattedResponse, 600000);
 
-  return res.status(200).json(formattedResponse);
+    return res.status(200).json(formattedResponse);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
 });
