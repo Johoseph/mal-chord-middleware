@@ -30,7 +30,7 @@ router.post("/access_token", async (req, res) => {
         },
       }
     )
-    .catch((err) => console.error(err));
+    .catch((err) => res.status(500).json(err));
 
   return res.status(200).json(response.data);
 });
@@ -53,7 +53,7 @@ router.post("/refresh_token", async (req, res) => {
         },
       }
     )
-    .catch((err) => console.error(err));
+    .catch((err) => res.status(500).json(err));
 
   return res.status(200).json(response.data);
 });
@@ -64,7 +64,7 @@ router.post("/user_details", async (req, res) => {
     .get("https://api.myanimelist.net/v2/users/@me", {
       headers: generateHeaders(req.body.userToken),
     })
-    .catch((err) => console.error(err));
+    .catch((err) => res.status(500).json(err));
 
   return res.status(200).json(response.data);
 });
@@ -87,7 +87,7 @@ router.post("/user_anime_list", async (req, res) => {
         headers: generateHeaders(userToken),
       }
     )
-    .catch((err) => console.error(err));
+    .catch((err) => res.status(500).json(err));
 
   // Transform response
   const formattedResponse = response.data.data.map((anime) => ({
