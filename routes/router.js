@@ -8,6 +8,7 @@ import {
   statusEnumConverter,
 } from "../helpers.js";
 
+const userCache = new Cache();
 const animeCache = new Cache();
 
 export const router = express.Router();
@@ -64,15 +65,32 @@ router.post("/refresh_token", async (req, res) => {
 
 // Get User Details
 router.post("/user_details", async (req, res) => {
+  const userToken = req.body.userToken;
+
+  // Empty large cache
+  if (userCache.size() >= 100) userCache.clear();
+
+  // Check cache
+  if (userCache.get(userToken))
+    return res.status(200).json(userCache.get(userToken));
+
   try {
     const response = await axios.get(
       "https://api.myanimelist.net/v2/users/@me",
       {
-        headers: generateHeaders(req.body.userToken),
+        headers: generateHeaders(userToken),
       }
     );
 
-    return res.status(200).json(response.data);
+    const formattedResponse = {
+      id: response.data.id,
+      name: response.data.name,
+      memberSince: response.data.joined_at,
+    };
+
+    userCache.put(userToken, formattedResponse, 1200000);
+
+    return res.status(200).json(formattedResponse);
   } catch (err) {
     return res.status(500).json(err);
   }
@@ -91,7 +109,7 @@ router.post("/user_anime_list", async (req, res) => {
 
   try {
     const response = await axios.get(
-      `https://api.myanimelist.net/v2/users/@me/animelist?limit=1000&fields=genres,studios,rating,rank,popularity,average_episode_duration,num_episodes,my_list_status{num_times_rewatched},alternative_titles`,
+      `https://api.myanimelist.net/v2/users/@me/animelist?limit=1000&sort=list_updated_at&fields=genres,studios,rating,rank,popularity,average_episode_duration,num_episodes,my_list_status{num_times_rewatched},alternative_titles`,
       {
         headers: generateHeaders(userToken),
       }
