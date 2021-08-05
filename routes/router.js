@@ -86,6 +86,7 @@ router.post("/user_details", async (req, res) => {
       id: response.data.id,
       name: response.data.name,
       memberSince: response.data.joined_at,
+      gender: response.data.gender,
     };
 
     userCache.put(userToken, formattedResponse, 1200000);
