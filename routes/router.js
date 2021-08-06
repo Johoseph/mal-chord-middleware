@@ -1,5 +1,6 @@
 import express from "express";
 import axios from "axios";
+import path from "path";
 import { Cache } from "memory-cache";
 import {
   generateHeaders,
@@ -12,6 +13,11 @@ const userCache = new Cache();
 const animeCache = new Cache();
 
 export const router = express.Router();
+
+// Get Image
+router.get("/chord-logo", async (req, res) => {
+  return res.status(200).sendFile(path.resolve("assets/MAL-Chord.png"));
+});
 
 // Get Access Token
 router.post("/access_token", async (req, res) => {
