@@ -116,7 +116,7 @@ router.post("/user_anime_list", async (req, res) => {
   if (animeCache.size() >= 50) animeCache.clear();
 
   // Check cache
-  if (existingCache && existingCache.data.length >= PAGE_LIMIT * page)
+  if (existingCache && !existingCache.hasNextPage)
     return res.status(200).json(existingCache);
 
   try {
