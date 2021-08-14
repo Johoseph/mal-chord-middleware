@@ -12,6 +12,8 @@ import {
 const userCache = new Cache();
 const animeCache = new Cache();
 
+const PAGE_LIMIT = 1000;
+
 export const router = express.Router();
 
 // Get Image
@@ -106,24 +108,29 @@ router.post("/user_details", async (req, res) => {
 // Get Anime/List Details
 router.post("/user_anime_list", async (req, res) => {
   const userToken = req.body.userToken;
+  const page = req.body.page;
+
+  const existingCache = animeCache.get(userToken);
 
   // Empty large cache
   if (animeCache.size() >= 50) animeCache.clear();
 
   // Check cache
-  if (animeCache.get(userToken))
-    return res.status(200).json(animeCache.get(userToken));
+  if (existingCache && existingCache.data.length >= PAGE_LIMIT * page)
+    return res.status(200).json(existingCache);
 
   try {
     const response = await axios.get(
-      `https://api.myanimelist.net/v2/users/@me/animelist?limit=1000&sort=list_updated_at&fields=genres,studios,rating,rank,popularity,average_episode_duration,num_episodes,my_list_status{num_times_rewatched},alternative_titles`,
+      `https://api.myanimelist.net/v2/users/@me/animelist?limit=${PAGE_LIMIT}&offset=${
+        PAGE_LIMIT * ((page ?? 1) - 1)
+      }sort=list_updated_at&fields=genres,studios,rating,rank,popularity,average_episode_duration,num_episodes,my_list_status{num_times_rewatched},alternative_titles`,
       {
         headers: generateHeaders(userToken),
       }
     );
 
     // Transform response
-    const formattedResponse = response.data.data.map((anime) => ({
+    const formattedData = response.data.data.map((anime) => ({
       id: anime.node.id,
       title: anime.node.alternative_titles.en || anime.node.title,
       secondsWatched: getSecondsWatched(anime),
@@ -137,6 +144,11 @@ router.post("/user_anime_list", async (req, res) => {
       rating: ratingEnumConverter(anime.node.rating),
       studios: anime.node.studios.map((studio) => studio.name),
     }));
+
+    const formattedResponse = {
+      data: [...(existingCache?.data ?? []), ...formattedData],
+      hasNextPage: !!response.data.paging?.next,
+    };
 
     animeCache.put(userToken, formattedResponse, 600000);
 
