@@ -1,0 +1,24 @@
+[
+  {
+    "id": 21,
+    "title": "One Piece",
+    "secondsWatched": 1094400,
+    "genres": [
+      "Action",
+      "Adventure",
+      "Comedy",
+      "Super Power",
+      "Drama",
+      "Fantasy",
+      "Shounen"
+    ],
+    "image": "https://api-cdn.myanimelist.net/images/anime/6/73245.jpg",
+    "status": "On Hold",
+    "score": 7,
+    "lastUpdated": "2021-07-30T18:04:03+00:00",
+    "popularity": 29,
+    "rank": 76,
+    "rating": "PG-13",
+    "studios": ["Toei Animation"]
+  }
+]

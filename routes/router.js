@@ -1,6 +1,7 @@
 import express from "express";
 import axios from "axios";
 import path from "path";
+import fs from "fs";
 import { Cache } from "memory-cache";
 import {
   generateHeaders,
@@ -13,12 +14,13 @@ const userCache = new Cache();
 const animeCache = new Cache();
 
 const PAGE_LIMIT = 1000;
+const __dirname = path.resolve();
 
 export const router = express.Router();
 
 // Get Image
 router.get("/chord-logo", async (req, res) => {
-  return res.status(200).sendFile(path.resolve("assets/MAL-Chord.png"));
+  return res.status(200).sendFile(path.join(__dirname, "assets/MAL-Chord.png"));
 });
 
 // Get Access Token
@@ -105,6 +107,14 @@ router.post("/user_details", async (req, res) => {
   }
 });
 
+// Get Mock user details
+router.post("/mock_details", async (req, res) => {
+  return res.status(200).json({
+    name: "Guest",
+    memberSince: new Date(),
+  });
+});
+
 // Get Anime/List Details
 router.post("/user_anime_list", async (req, res) => {
   const userToken = req.body.userToken;
@@ -156,4 +166,16 @@ router.post("/user_anime_list", async (req, res) => {
   } catch (err) {
     return res.status(500).json(err);
   }
+});
+
+// Get Mock anime list
+router.post("/mock_anime_list", async (req, res) => {
+  const animeList = fs.readFileSync(
+    path.join(__dirname, "/mocks/mockAnimeList.json")
+  );
+
+  return res.status(200).json({
+    data: JSON.parse(animeList),
+    hasNextPage: false,
+  });
 });
