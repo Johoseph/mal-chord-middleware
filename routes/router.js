@@ -18,6 +18,11 @@ const __dirname = path.resolve();
 
 export const router = express.Router();
 
+// Default
+router.get("/", async (req, res) => {
+  return res.status(200).send("OK");
+});
+
 // Get Image
 router.get("/chord-logo", async (req, res) => {
   return res.status(200).sendFile(path.join(__dirname, "assets/MAL-Chord.png"));
