@@ -28,7 +28,7 @@ npm install
 The following commands can be run in the project:
 
 - `npm start` - Runs the application in development mode
-- `npm run watch` - Utilises nodemon to runs the application in watch mode
+- `npm run watch` - Utilises [nodemon](https://nodemon.io/) to run the application in watch mode
 
 Environment configuration can be specified by adding a `.env` file to the root of your local repository. A list of the variables needed for local development has been included below.
 | Key | Value | Purpose |
