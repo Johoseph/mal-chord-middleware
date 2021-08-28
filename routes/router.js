@@ -51,6 +51,7 @@ router.post("/access_token", async (req, res) => {
 
     return res.status(200).json(response.data);
   } catch (err) {
+    console.error("/access_token", err);
     return res.status(500).json(err);
   }
 });
@@ -76,6 +77,7 @@ router.post("/refresh_token", async (req, res) => {
 
     return res.status(200).json(response.data);
   } catch (err) {
+    console.error("/refresh_token", err);
     return res.status(500).json(err);
   }
 });
@@ -110,6 +112,7 @@ router.post("/user_details", async (req, res) => {
 
     return res.status(200).json(formattedResponse);
   } catch (err) {
+    console.error("/user_details", err);
     return res.status(500).json(err);
   }
 });
@@ -171,6 +174,7 @@ router.post("/user_anime_list", async (req, res) => {
 
     return res.status(200).json(formattedResponse);
   } catch (err) {
+    console.error("/user_anime_list", err);
     return res.status(500).json(err);
   }
 });
@@ -238,7 +242,7 @@ router.post("/user_manga_list", async (req, res) => {
 
     return res.status(200).json(formattedResponse);
   } catch (err) {
-    console.error(err);
+    console.error("/user_manga_list", err);
     return res.status(500).json(err);
   }
 });
