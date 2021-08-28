@@ -225,7 +225,7 @@ router.post("/user_manga_list", async (req, res) => {
       popularity: manga.node.popularity,
       rank: manga.node.rank,
       authors: manga.node.authors.map((author) =>
-        [author.first_name, author.last_name?.toUpperCase()].join(" ")
+        [author.node.first_name, author.node.last_name?.toUpperCase()].join(" ")
       ),
     }));
 
