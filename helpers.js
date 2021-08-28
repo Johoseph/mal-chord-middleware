@@ -16,7 +16,7 @@ export const getSecondsWatched = (anime) => {
   return duration * epsWatched;
 };
 
-export const statusEnumConverter = (status) => {
+export const animeStatusEnumConverter = (status) => {
   switch (status) {
     case "watching":
       return "Watching";
@@ -28,6 +28,21 @@ export const statusEnumConverter = (status) => {
       return "Dropped";
     case "plan_to_watch":
       return "Plan To Watch";
+  }
+};
+
+export const mangaStatusEnumConverter = (status) => {
+  switch (status) {
+    case "reading":
+      return "Reading";
+    case "completed":
+      return "Completed";
+    case "on_hold":
+      return "On Hold";
+    case "dropped":
+      return "Dropped";
+    case "plan_to_read":
+      return "Plan To Read";
   }
 };
 
