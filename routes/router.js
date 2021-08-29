@@ -9,6 +9,8 @@ import {
   ratingEnumConverter,
   animeStatusEnumConverter,
   mangaStatusEnumConverter,
+  getChaptersRead,
+  getVolumesRead,
 } from "../helpers.js";
 
 const userCache = new Cache();
@@ -209,7 +211,7 @@ router.post("/user_manga_list", async (req, res) => {
     const response = await axios.get(
       `https://api.myanimelist.net/v2/users/@me/mangalist?limit=${PAGE_LIMIT}&offset=${
         PAGE_LIMIT * ((page ?? 1) - 1)
-      }sort=list_updated_at&fields=genres,authors{first_name,last_name},rank,popularity,num_chapters,num_volumes,my_list_status{num_times_rewatched},alternative_titles`,
+      }sort=list_updated_at&fields=genres,authors{first_name,last_name},rank,popularity,num_chapters,num_volumes,my_list_status{num_times_reread,is_rereading,num_chapters_read,num_volumes_read},alternative_titles`,
       {
         headers: generateHeaders(userToken),
       }
@@ -219,8 +221,8 @@ router.post("/user_manga_list", async (req, res) => {
     const formattedData = response.data.data.map((manga) => ({
       id: manga.node.id,
       title: manga.node.alternative_titles.en || manga.node.title,
-      chaptersRead: manga.node.my_list_status.num_chapters_read,
-      volumesRead: manga.node.my_list_status.num_volumes_read,
+      chaptersRead: getChaptersRead(manga),
+      volumesRead: getVolumesRead(manga),
       genres: manga.node.genres.map((genre) => genre.name),
       image: manga.node.main_picture.medium,
       status: mangaStatusEnumConverter(manga.node.my_list_status.status),

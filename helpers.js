@@ -16,6 +16,28 @@ export const getSecondsWatched = (anime) => {
   return duration * epsWatched;
 };
 
+export const getChaptersRead = (manga) => {
+  const info = manga.node;
+  let chaptersRead = info.my_list_status.num_chapters_read;
+
+  if (info.my_list_status.is_rereading)
+    chaptersRead +=
+      info.num_chapters * (info.my_list_status.num_times_reread + 1);
+
+  return chaptersRead;
+};
+
+export const getVolumesRead = (manga) => {
+  const info = manga.node;
+  let volumesRead = info.my_list_status.num_volumes_read;
+
+  if (info.my_list_status.is_rereading)
+    volumesRead +=
+      info.num_volumes * (info.my_list_status.num_times_reread + 1);
+
+  return volumesRead;
+};
+
 export const animeStatusEnumConverter = (status) => {
   switch (status) {
     case "watching":
