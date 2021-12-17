@@ -1,7 +1,7 @@
 {
-  "name": "mal-middleware",
+  "name": "mal-chord-middleware",
   "version": "1.0.0",
-  "description": "Middleware for MAL-Grapher that handles sending requests to MyAnimeList",
+  "description": "Middleware for MAL-Chord that handles sending requests to MyAnimeList",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -11,7 +11,7 @@
   "author": "Joseph Moroney",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
